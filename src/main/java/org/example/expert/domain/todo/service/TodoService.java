@@ -9,6 +9,7 @@ import org.example.expert.client.WeatherClient;
 import org.example.expert.domain.common.dto.AuthUser;
 import org.example.expert.domain.common.exception.InvalidRequestException;
 import org.example.expert.domain.todo.dto.request.TodoSaveRequest;
+import org.example.expert.domain.todo.dto.response.SummaryResponse;
 import org.example.expert.domain.todo.dto.response.TodoResponse;
 import org.example.expert.domain.todo.dto.response.TodoSaveResponse;
 import org.example.expert.domain.todo.entity.Todo;
@@ -88,5 +89,16 @@ public class TodoService {
                 todo.getCreatedAt(),
                 todo.getModifiedAt()
         );
+    }
+
+    public Page<SummaryResponse> getSummary(int page, int size, String title, String startDate, String endDate, String nickname) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDateTime startLocal;
+        LocalDateTime endLocal;
+        startLocal = startDate == null?null:LocalDate.parse(startDate, formatter).atStartOfDay();
+        endLocal = endDate == null?null:LocalDate.parse(endDate, formatter).atStartOfDay();
+
+        return todoRepository.getSummary(pageable, title, startLocal, endLocal, nickname);
     }
 }
