@@ -1,5 +1,9 @@
 package org.example.expert.domain.todo.service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 import lombok.RequiredArgsConstructor;
 import org.example.expert.client.WeatherClient;
 import org.example.expert.domain.common.dto.AuthUser;
@@ -47,10 +51,15 @@ public class TodoService {
     }
 
     @Transactional(readOnly = true)
-    public Page<TodoResponse> getTodos(int page, int size) {
+    public Page<TodoResponse> getTodos(int page, int size, String weather, String startDate, String endDate) {
         Pageable pageable = PageRequest.of(page - 1, size);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDateTime startLocal;
+        LocalDateTime endLocal;
+        startLocal = startDate == null?null:LocalDate.parse(startDate, formatter).atStartOfDay();
+        endLocal = endDate == null?null:LocalDate.parse(endDate, formatter).atStartOfDay();
 
-        Page<Todo> todos = todoRepository.findAllByOrderByModifiedAtDesc(pageable);
+        Page<Todo> todos = todoRepository.findAllByParameter(pageable, weather, startLocal, endLocal);
 
         return todos.map(todo -> new TodoResponse(
                 todo.getId(),
