@@ -28,5 +28,4 @@ public class Manager {
         this.user = user;
         this.todo = todo;
     }
-    //asd
 }
