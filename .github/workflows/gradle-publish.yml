@@ -56,4 +56,11 @@ jobs:
                 kill -9 $pid
               fi
             done
-            echo "nohup java -jar ~/*.jar > ~/app.log 2>&1 &" | at now
+            echo 'DB_URL="jdbc:mysql://database-1.cj2acyakajuz.us-east-2.rds.amazonaws.com:3306/database-1?serverTimezone=Asia/Seoul"' | sudo tee -a /etc/environment
+            echo 'DB_USER="admin"' | sudo tee -a /etc/environment
+            echo 'DB_PASSWORD="Wlfkfsh2#"' | sudo tee -a /etc/environment
+            source /etc/environment
+
+            # Spring Boot 앱 실행
+            DB_URL="$DB_URL" DB_USER="$DB_USER" DB_PASSWORD="$DB_PASSWORD" nohup java -jar ~/*.jar > ~/app.log 2>&1 &
+
