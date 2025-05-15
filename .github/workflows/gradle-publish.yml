@@ -29,8 +29,20 @@ jobs:
       - name: Build JAR
         run: ./gradlew bootJar
 
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v4
+      - name: SSH Commands
+        uses: appleboy/ssh-action@v0.1.6
         with:
-          name: built-jar
-          path: build/libs/*.jar
+          host: ${{ secrets.SSH_HOST }}
+          username: ec2-user
+          key: ${{ secrets.SSH_KEY }}
+          port: 22
+          script_stop: true
+          script: |
+            sudo yum update -y && sudo yum install -y java-21-amazon-corretto
+            for pid in $(pgrep java); do
+              if ps -p $pid -o args= | grep -q 'java -jar'; then
+                echo "Java process with 'java -jar' found (PID: $pid). Terminating..."
+                kill -9 $pid
+              fi
+            done
+            echo "nohup java -jar ~/*.jar > ~/app.log 2>&1 &" | at now
