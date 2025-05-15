@@ -22,6 +22,10 @@ jobs:
       - name: Grant Execute Permission for Gradle
         run: chmod +x gradlew
 
+      - name: Install Gradle Wrapper
+        run: |
+          gradle wrapper --gradle-version 8.0
+
       - name: Build JAR
         run: ./gradlew bootJar
 
